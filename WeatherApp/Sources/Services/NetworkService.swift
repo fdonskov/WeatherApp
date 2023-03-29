@@ -8,6 +8,8 @@
 import Foundation
 
 class NetworkService {
+    
+    // https://api.weatherapi.com/v1/current.json?key=9da93b4c507f441a88f230306232803&q=Moscow&aqi=no
 
     static let shared = NetworkService()
     

@@ -113,14 +113,21 @@ extension WeatherCollectionViewCell {
         
         self.temperatureLabel.text = "\(viewModel.current.tempC) °C"
         
-//        guard let imageUrl = URL(string: viewModel.current.condition.icon) else { return }
-//        do {
-//            let imageData = try Data(contentsOf: imageUrl)
-//            self.weatherImageView.image = UIImage(data: imageData)
-//        } catch {
-//            print("Error loading image: \(error)")
-//        }
-        
+        let imageName = viewModel.current.condition.icon
+        let imageUrlString = "https:\(imageName)"
+        if let imageUrl = URL(string: imageUrlString) {
+            let session = URLSession.shared
+            let task = session.dataTask(with: imageUrl, completionHandler: { data, response, error in
+                if let error = error {
+                    print("Error loading image: \(error)")
+                } else if let data = data, let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        self.weatherImageView.image = image
+                    }
+                }
+            })
+            task.resume()
+        }
     }
     
     private func configureConstraints() {
