@@ -7,9 +7,13 @@
 
 import UIKit
 
-final class WeatherViewController: UIViewController {
+final class WeatherViewController: UIViewController, FavoriteWeatherDelegate {
     
     // MARK: - Private properties
+    
+    weak var favoriteDelegate: FavoriteWeatherDelegate?
+    
+    private var weatherData: [WeatherData] = []
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -22,7 +26,8 @@ final class WeatherViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.register(WeatherCollectionViewCell.self, forCellWithReuseIdentifier: WeatherCollectionViewCell.identifier)
         
-        
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.showsVerticalScrollIndicator = false
         return collectionView
     }()
     
@@ -30,6 +35,8 @@ final class WeatherViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        fetchWeather(cities: ["Moscow", "Moscow", "Moscow", "Moscow", "Moscow", "Moscow", "Moscow", "Moscow", "Moscow", "Moscow"])
         
         setupHierarchy()
         configureCollectionView()
@@ -40,7 +47,6 @@ final class WeatherViewController: UIViewController {
     
     private func setupHierarchy() {
         view.backgroundColor = .white
-//        self.navigationController?.navigationBar.prefersLargeTitles = true
         self.title = "Weather"
         
     }
@@ -55,28 +61,58 @@ final class WeatherViewController: UIViewController {
     }
     
     private func configureCollectionView() {
-//        let layout = UICollectionViewFlowLayout()
-//        layout.scrollDirection = .vertical
-//        layout.itemSize = CGSize(width: (view.frame.size.width / 2)-5,
-//                                 height: (view.frame.size.width / 3)-5)
-//        layout.minimumLineSpacing = 10
-//        layout.minimumInteritemSpacing = 0.5
-//        layout.sectionInset = UIEdgeInsets(top: 0, left: 1, bottom: 0, right: 1)
-
-//        collectionView = UICollectionView(frame: .zero,
-//                                    collectionViewLayout: layout)
-        
-//        guard let collectionView = collectionView else { return }
-        
-//        collectionView.translatesAutoresizingMaskIntoConstraints = false
-//        collectionView.register(WeatherCollectionViewCell.self, forCellWithReuseIdentifier: WeatherCollectionViewCell.identifier)
         collectionView.dataSource = self
         collectionView.delegate = self
         
         view.addSubview(collectionView)
-//        collectionView.frame = view.bounds
+    }
+    
+//    private func addCityToFavorites(_ weatherData: WeatherData) {
+//        let favoritesVC = FavoritsViewController()
+//            favoriteDelegate = self
+//            favoritesVC.favoriteWeatherData.append(weatherData)
+////            navigationController?.pushViewController(favoritesVC, animated: true)
+//    }
+    
+    func didAddWeatherToFavorite(_ weatherData: WeatherData) {
+        let favoritesVC = FavoritsViewController()
+            favoriteDelegate = self
+            favoritesVC.favoriteWeatherData.append(weatherData)
     }
 }
+
+// MARK: - Network
+
+extension WeatherViewController {
+    
+    func fetchWeather(cities: [String]) {
+        let group = DispatchGroup()
+        for city in cities {
+            group.enter()
+            NetworkService.shared.fetchWeatherData(city: city) { [weak self] result in
+                defer { group.leave() }
+                switch result {
+                case .success(let data):
+                    do {
+
+                        let decoder = JSONDecoder()
+                        let weatherData = try decoder.decode(WeatherData.self, from: data)
+                        self?.weatherData.append(weatherData)
+                    } catch {
+                        print("Error parsing weather data: \(error.localizedDescription)")
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            }
+        }
+        group.notify(queue: DispatchQueue.main) { [weak self] in
+            self?.collectionView.reloadData()
+        }
+    }
+}
+
+// MARK: - UICollectionViewDelegate
 
 extension WeatherViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -84,14 +120,24 @@ extension WeatherViewController: UICollectionViewDelegate {
     }
 }
 
+// MARK: - UICollectionViewDataSource
+
 extension WeatherViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 20
+        return weatherData.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: WeatherCollectionViewCell.identifier, for: indexPath) as? WeatherCollectionViewCell else { return UICollectionViewCell() }
         
+        let viewModel = weatherData[indexPath.row]
+        cell.configure(with: viewModel)
+        
+        cell.addFavoritesButtonAction = { [weak self] in
+            guard let weatherData = self?.weatherData[indexPath.row] else { return }
+            self?.didAddWeatherToFavorite(weatherData)
+            print([weatherData].count)
+        }
         
         return cell
     }

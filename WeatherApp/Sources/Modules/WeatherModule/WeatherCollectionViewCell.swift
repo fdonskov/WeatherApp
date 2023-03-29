@@ -11,12 +11,15 @@ final class WeatherCollectionViewCell: UICollectionViewCell {
     
     static let identifier = String(describing: WeatherCollectionViewCell.self)
     
+    var addFavoritesButtonAction: (() -> Void)?
+    private var weatherData: WeatherData?
+        
     // MARK: - Private properties
     
     private lazy var weatherImageView: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
-        image.backgroundColor = .systemCyan
+        image.backgroundColor = .systemGray2
         image.contentMode = .scaleAspectFill
         return image
     }()
@@ -24,11 +27,9 @@ final class WeatherCollectionViewCell: UICollectionViewCell {
     private lazy var cityNameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.numberOfLines = 0
         label.font = .systemFont(ofSize: 18, weight: .semibold)
         label.textColor = .secondaryLabel
         label.numberOfLines = 1
-        label.text = "Краснодар"
         return label
     }()
     
@@ -36,10 +37,9 @@ final class WeatherCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
-        label.font = .systemFont(ofSize: 18, weight: .regular)
+        label.font = .systemFont(ofSize: 16, weight: .regular)
         label.textAlignment = .center
         label.textColor = .secondaryLabel
-        label.text = "15"
         return label
     }()
     
@@ -47,10 +47,9 @@ final class WeatherCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .systemFont(ofSize: 12.5, weight: .regular)
         label.textAlignment = .center
         label.textColor = .secondaryLabel
-        label.text = "Ясно"
         return label
     }()
     
@@ -62,6 +61,8 @@ final class WeatherCollectionViewCell: UICollectionViewCell {
         button.setTitle("В избранное", for: .normal)
         button.tintColor = .secondaryLabel
         button.backgroundColor = .systemOrange
+        button.layer.cornerRadius = 8
+        button.layer.masksToBounds = true
         button.addTarget(self, action: #selector(addFavoritesButtonCompletion), for: .touchUpInside)
         return button
     }()
@@ -70,7 +71,7 @@ final class WeatherCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        contentView.backgroundColor = .systemGreen
+        contentView.backgroundColor = .systemGray5
         
         contentView.addSubview(weatherImageView)
         contentView.addSubview(cityNameLabel)
@@ -105,24 +106,22 @@ final class WeatherCollectionViewCell: UICollectionViewCell {
 // MARK: - Methods
 extension WeatherCollectionViewCell {
     
-//    func configure(with viewModel: NewsTableViewCellViewModel) {
-//        newsTitleLabel.text = viewModel.title
-//        subtitleLabel.text = "Просмотрено: "
-//        //        subtitleLabel.text = viewModel.subtitle
-//
-//        if let data = viewModel.imageData {
-//            newsImageView.image = UIImage(data: data)
-//        } else if let url = viewModel.imageURL {
-//            URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
-//                guard let data = data, error == nil else { return }
-//                viewModel.imageData = data
-//
-//                DispatchQueue.main.async {
-//                    self?.newsImageView.image = UIImage(data: data)
-//                }
-//            }.resume()
+    func configure(with viewModel: WeatherData) {
+        
+        self.cityNameLabel.text = viewModel.location.name
+        self.descriptionWeatherLabel.text = viewModel.current.condition.text
+        
+        self.temperatureLabel.text = "\(viewModel.current.tempC) °C"
+        
+//        guard let imageUrl = URL(string: viewModel.current.condition.icon) else { return }
+//        do {
+//            let imageData = try Data(contentsOf: imageUrl)
+//            self.weatherImageView.image = UIImage(data: imageData)
+//        } catch {
+//            print("Error loading image: \(error)")
 //        }
-//    }
+        
+    }
     
     private func configureConstraints() {
         
@@ -160,5 +159,6 @@ extension WeatherCollectionViewCell {
     @objc
     private func addFavoritesButtonCompletion() {
         print("Tap")
+        addFavoritesButtonAction?()
     }
 }
