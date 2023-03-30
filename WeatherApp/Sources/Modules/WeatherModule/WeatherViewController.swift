@@ -7,13 +7,12 @@
 
 import UIKit
 
-final class WeatherViewController: UIViewController, FavoriteWeatherDelegate {
+final class WeatherViewController: UIViewController {
     
     // MARK: - Private properties
     
-    weak var favoriteDelegate: FavoriteWeatherDelegate?
-    
     private var weatherData: [WeatherData] = []
+    private var favoriteWeatherData: [WeatherData] = []
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -32,18 +31,20 @@ final class WeatherViewController: UIViewController, FavoriteWeatherDelegate {
     }()
     
     // MARK: - Lifecycle
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        fetchWeather(cities: ["Moscow", "Moscow", "Moscow", "Moscow", "Moscow", "Moscow", "Moscow", "Moscow", "Moscow", "Moscow"])
+        fetchWeather(cities: ["Moscow", "London", "Istanbul", "Tokyo", "Singapore", "SanFrancisco", "Rotterdam", "Riga", "Rome", "Odessa", "Milan", "Minsk", "Madrid", "Cairo", "Yerevan", "Havana", "Washington", "Valencia", "Berlin", "Bangkok"])
+        
+        subscribeToFavoriteDataUpdates()
         
         setupHierarchy()
         configureCollectionView()
         configureConstraints()
     }
     
-    // MARK: - Private properties
+    // MARK: - Private methods
     
     private func setupHierarchy() {
         view.backgroundColor = .white
@@ -54,8 +55,8 @@ final class WeatherViewController: UIViewController, FavoriteWeatherDelegate {
     private func configureConstraints() {
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Resources.WeatherView.collectionViewLeadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Resources.WeatherView.collectionViewLeadingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
@@ -67,21 +68,48 @@ final class WeatherViewController: UIViewController, FavoriteWeatherDelegate {
         view.addSubview(collectionView)
     }
     
-//    private func addCityToFavorites(_ weatherData: WeatherData) {
-//        let favoritesVC = FavoritsViewController()
-//            favoriteDelegate = self
-//            favoritesVC.favoriteWeatherData.append(weatherData)
-////            navigationController?.pushViewController(favoritesVC, animated: true)
-//    }
+    private func saveFavoritesData() {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(favoriteWeatherData) {
+            UserDefaults.standard.set(encoded, forKey: Resources.WeatherView.forKeyWeatherData)
+            UserDefaults.standard.synchronize()
+        }
+    }
     
-    func didAddWeatherToFavorite(_ weatherData: WeatherData) {
-        let favoritesVC = FavoritsViewController()
-            favoriteDelegate = self
-            favoritesVC.favoriteWeatherData.append(weatherData)
+    private func loadFavoritesData() -> [WeatherData] {
+        if let data = UserDefaults.standard.data(forKey: Resources.WeatherView.forKeyWeatherData) {
+            let decoder = JSONDecoder()
+            if let decoded = try? decoder.decode([WeatherData].self, from: data) {
+                return decoded
+            }
+        }
+        return []
+    }
+    
+    private func subscribeToFavoriteDataUpdates() {
+        NotificationCenter.default.addObserver(self, selector: #selector(updateFavoriteData(_:)), name: Notification.Name(Resources.WeatherView.updateFavoriteData), object: nil)
+    }
+    
+    func updateFavoritesData(_ data: [WeatherData]) {
+        favoriteWeatherData = data
+        saveFavoritesData()
+        collectionView.reloadData()
     }
 }
 
-// MARK: - Network
+// MARK: - Actions
+
+extension WeatherViewController {
+    @objc
+    func updateFavoriteData(_ notification: Notification) {
+        if let favoriteWeatherData = notification.userInfo?[Resources.WeatherView.forKeyWeatherData] as? [WeatherData] {
+            self.favoriteWeatherData = favoriteWeatherData
+            collectionView.reloadData()
+        }
+    }
+}
+
+// MARK: - Network methods
 
 extension WeatherViewController {
     
@@ -94,7 +122,7 @@ extension WeatherViewController {
                 switch result {
                 case .success(let data):
                     do {
-
+                        
                         let decoder = JSONDecoder()
                         let weatherData = try decoder.decode(WeatherData.self, from: data)
                         self?.weatherData.append(weatherData)
@@ -134,11 +162,15 @@ extension WeatherViewController: UICollectionViewDataSource {
         cell.configure(with: viewModel)
         
         cell.addFavoritesButtonAction = { [weak self] in
-            guard let weatherData = self?.weatherData[indexPath.row] else { return }
-            self?.didAddWeatherToFavorite(weatherData)
-            print([weatherData].count)
+            
+            guard let indexPath = collectionView.indexPath(for: cell) else { return }
+            let weatherData = self?.weatherData[indexPath.row]
+            if let data = weatherData {
+                self?.favoriteWeatherData.append(data)
+                self?.saveFavoritesData()
+                self?.collectionView.reloadItems(at: [indexPath])
+            }
         }
-        
         return cell
     }
 }
