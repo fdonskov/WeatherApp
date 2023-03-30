@@ -22,17 +22,17 @@ final class MainTabBarController: UITabBarController {
     func setupTabBar() {
         
         let weatherViewController = createNavController(vc: WeatherViewController(),
-                                                        itemName: "Weather",
-                                                        itemImage: "cloud.fill")
+                                                        itemName: Resources.TabBar.weatherItemName,
+                                                        itemImage: Resources.TabBar.weatherItemImage)
         
-        let favotitsViewController = createNavController(vc: FavoritsViewController(),
-                                                         itemName: "Favorits",
-                                                         itemImage: "star.fill")
+        let favoritesViewController = createNavController(vc: FavoritesViewController(),
+                                                          itemName: Resources.TabBar.favoritsItemName,
+                                                         itemImage: Resources.TabBar.favoritsItemImage)
         
-        weatherViewController.tabBarItem.tag = 0
-        favotitsViewController.tabBarItem.tag = 1
+        weatherViewController.tabBarItem.tag = Resources.TabBar.weatherTeg
+        favoritesViewController.tabBarItem.tag = Resources.TabBar.favoritsTeg
         
-        viewControllers = [weatherViewController, favotitsViewController]
+        viewControllers = [weatherViewController, favoritesViewController]
     }
     
     // MARK: - Private properties
@@ -40,13 +40,13 @@ final class MainTabBarController: UITabBarController {
     private func createNavController(vc: UIViewController, itemName: String, itemImage: String) -> UINavigationController {
         
         let item = UITabBarItem(title: itemName,
-                                image: UIImage(systemName: itemImage)?.withAlignmentRectInsets(.init(top: 0,
-                                                                                                     left: 0,
-                                                                                                     bottom: 0,
-                                                                                                     right: 0)),
+                                image: UIImage(systemName: itemImage)?.withAlignmentRectInsets(.init(top: Resources.TabBar.standartOffSet,
+                                                                                                     left: Resources.TabBar.standartOffSet,
+                                                                                                     bottom: Resources.TabBar.standartOffSet,
+                                                                                                     right: Resources.TabBar.standartOffSet)),
                                 tag: 0)
-        item.titlePositionAdjustment = .init(horizontal: 0,
-                                             vertical: 0)
+        item.titlePositionAdjustment = .init(horizontal: Resources.TabBar.standartOffSet,
+                                             vertical: Resources.TabBar.standartOffSet)
         
         let navController = UINavigationController(rootViewController: vc)
         navController.tabBarItem = item

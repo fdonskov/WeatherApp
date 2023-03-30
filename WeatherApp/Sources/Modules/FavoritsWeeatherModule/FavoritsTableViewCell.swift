@@ -11,6 +11,8 @@ final class FavoritsTableViewCell: UITableViewCell {
     
     static let identifier = String(describing: FavoritsTableViewCell.self)
     
+    // MARK: - Private properties
+    
     private lazy var nameCityLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -58,8 +60,6 @@ final class FavoritsTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-
-    
     // MARK: - Private methods
 
     private func setupHierarhy() {
@@ -82,7 +82,6 @@ final class FavoritsTableViewCell: UITableViewCell {
             
             descriptionLabel.topAnchor.constraint(equalTo: speedWindLabel.bottomAnchor, constant: 3),
             descriptionLabel.leadingAnchor.constraint(equalTo: nameCityLabel.leadingAnchor)
-            
         ])
     }
 }

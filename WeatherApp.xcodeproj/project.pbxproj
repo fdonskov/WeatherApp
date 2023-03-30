@@ -15,9 +15,10 @@
 		933C25DA29D3173800281C6A /* WeatherCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933C25D929D3173800281C6A /* WeatherCollectionViewCell.swift */; };
 		933C25DC29D3606E00281C6A /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933C25DB29D3606E00281C6A /* NetworkService.swift */; };
 		933C25DE29D3645200281C6A /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933C25DD29D3645200281C6A /* MainTabBarController.swift */; };
-		933C25E029D365D500281C6A /* FavoritsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933C25DF29D365D500281C6A /* FavoritsViewController.swift */; };
+		933C25E029D365D500281C6A /* FavoritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933C25DF29D365D500281C6A /* FavoritesViewController.swift */; };
 		933C25E529D37A0700281C6A /* WeatherData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933C25E429D37A0700281C6A /* WeatherData.swift */; };
 		933C25E729D399E400281C6A /* FavoritsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933C25E629D399E400281C6A /* FavoritsTableViewCell.swift */; };
+		934D948329D4E174005CF2A2 /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 934D948229D4E174005CF2A2 /* Resources.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,9 +32,10 @@
 		933C25D929D3173800281C6A /* WeatherCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherCollectionViewCell.swift; sourceTree = "<group>"; };
 		933C25DB29D3606E00281C6A /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		933C25DD29D3645200281C6A /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
-		933C25DF29D365D500281C6A /* FavoritsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritsViewController.swift; sourceTree = "<group>"; };
+		933C25DF29D365D500281C6A /* FavoritesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesViewController.swift; sourceTree = "<group>"; };
 		933C25E429D37A0700281C6A /* WeatherData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherData.swift; sourceTree = "<group>"; };
 		933C25E629D399E400281C6A /* FavoritsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritsTableViewCell.swift; sourceTree = "<group>"; };
+		934D948229D4E174005CF2A2 /* Resources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resources.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +87,7 @@
 		933C25D329D30CDF00281C6A /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				934D948229D4E174005CF2A2 /* Resources.swift */,
 				933C25D629D30D7C00281C6A /* Application */,
 				933C25D729D30D8E00281C6A /* Services */,
 				933C25D829D30D9400281C6A /* Modules */,
@@ -113,7 +116,7 @@
 			isa = PBXGroup;
 			children = (
 				933C25DB29D3606E00281C6A /* NetworkService.swift */,
-				933C25E429D37A0700281C6A /* WeatherData.swift */,
+				934D948429D4E3E4005CF2A2 /* Models */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -148,10 +151,18 @@
 		933C25E329D365FE00281C6A /* FavoritsWeeatherModule */ = {
 			isa = PBXGroup;
 			children = (
-				933C25DF29D365D500281C6A /* FavoritsViewController.swift */,
+				933C25DF29D365D500281C6A /* FavoritesViewController.swift */,
 				933C25E629D399E400281C6A /* FavoritsTableViewCell.swift */,
 			);
 			path = FavoritsWeeatherModule;
+			sourceTree = "<group>";
+		};
+		934D948429D4E3E4005CF2A2 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				933C25E429D37A0700281C6A /* WeatherData.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -227,9 +238,10 @@
 				933C25DC29D3606E00281C6A /* NetworkService.swift in Sources */,
 				933C25DA29D3173800281C6A /* WeatherCollectionViewCell.swift in Sources */,
 				933C25DE29D3645200281C6A /* MainTabBarController.swift in Sources */,
+				934D948329D4E174005CF2A2 /* Resources.swift in Sources */,
 				933C25C329D309F200281C6A /* WeatherViewController.swift in Sources */,
 				933C25E729D399E400281C6A /* FavoritsTableViewCell.swift in Sources */,
-				933C25E029D365D500281C6A /* FavoritsViewController.swift in Sources */,
+				933C25E029D365D500281C6A /* FavoritesViewController.swift in Sources */,
 				933C25BF29D309F200281C6A /* AppDelegate.swift in Sources */,
 				933C25E529D37A0700281C6A /* WeatherData.swift in Sources */,
 				933C25C129D309F200281C6A /* SceneDelegate.swift in Sources */,

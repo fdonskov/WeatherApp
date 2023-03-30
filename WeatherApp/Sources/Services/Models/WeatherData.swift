@@ -19,7 +19,7 @@ struct Current: Codable {
     let isDay: Int
     let condition: Condition
     let windKph: Double
-
+    
     enum CodingKeys: String, CodingKey {
         case lastUpdatedEpoch = "last_updated_epoch"
         case lastUpdated = "last_updated"
@@ -41,7 +41,7 @@ struct Location: Codable {
     let tzID: String
     let localtimeEpoch: Int
     let localtime: String
-
+    
     enum CodingKeys: String, CodingKey {
         case name, region, country, lat, lon
         case tzID = "tz_id"
