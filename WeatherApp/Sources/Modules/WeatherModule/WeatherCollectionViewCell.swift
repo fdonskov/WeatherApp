@@ -11,15 +11,13 @@ final class WeatherCollectionViewCell: UICollectionViewCell {
     
     static let identifier = String(describing: WeatherCollectionViewCell.self)
     
-    var addFavoritesButtonAction: (() -> Void)?
-    private var weatherData: WeatherData?
-        
     // MARK: - Private properties
+    
+    private var weatherData: WeatherData?
     
     private lazy var weatherImageView: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
-        image.backgroundColor = .systemGray2
         image.contentMode = .scaleAspectFill
         return image
     }()
@@ -27,7 +25,7 @@ final class WeatherCollectionViewCell: UICollectionViewCell {
     private lazy var cityNameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 18, weight: .semibold)
+        label.font = .systemFont(ofSize: Resources.WeatherView.cityNameLabelSize, weight: .semibold)
         label.textColor = .secondaryLabel
         label.numberOfLines = 1
         return label
@@ -37,7 +35,7 @@ final class WeatherCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
-        label.font = .systemFont(ofSize: 16, weight: .regular)
+        label.font = .systemFont(ofSize: Resources.WeatherView.temperatureLabel, weight: .regular)
         label.textAlignment = .center
         label.textColor = .secondaryLabel
         return label
@@ -47,7 +45,7 @@ final class WeatherCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
-        label.font = .systemFont(ofSize: 12.5, weight: .regular)
+        label.font = .systemFont(ofSize: Resources.WeatherView.descriptionWeatherLabelSize, weight: .regular)
         label.textAlignment = .center
         label.textColor = .secondaryLabel
         return label
@@ -57,7 +55,7 @@ final class WeatherCollectionViewCell: UICollectionViewCell {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(UIImage(systemName: "star.fill"), for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 16)
+        button.titleLabel?.font = .systemFont(ofSize: Resources.WeatherView.addFavoritesButtonTextSize)
         button.setTitle("В избранное", for: .normal)
         button.tintColor = .secondaryLabel
         button.backgroundColor = .systemOrange
@@ -72,25 +70,30 @@ final class WeatherCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.backgroundColor = .systemGray5
+        contentView.layer.cornerRadius = Resources.WeatherView.viewCornerRadius
         
         contentView.addSubview(weatherImageView)
         contentView.addSubview(cityNameLabel)
         contentView.addSubview(temperatureLabel)
         contentView.addSubview(descriptionWeatherLabel)
         contentView.addSubview(addFavoritesButton)
-
+        
         configureConstraints()
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        fatalError(Resources.Errors.required)
     }
+    
+    // MARK: - Actions
+    
+    var addFavoritesButtonAction: (() -> Void)?
     
     // MARK: - Lifecycle
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        weatherImageView.layer.cornerRadius = 10
+        weatherImageView.layer.cornerRadius = Resources.WeatherView.viewCornerRadius
         weatherImageView.layer.masksToBounds = true
     }
     
@@ -101,39 +104,12 @@ final class WeatherCollectionViewCell: UICollectionViewCell {
         temperatureLabel.text = nil
         descriptionWeatherLabel.text = nil
     }
-}
-
-// MARK: - Methods
-extension WeatherCollectionViewCell {
     
-    func configure(with viewModel: WeatherData) {
-        
-        self.cityNameLabel.text = viewModel.location.name
-        self.descriptionWeatherLabel.text = viewModel.current.condition.text
-        
-        self.temperatureLabel.text = "\(viewModel.current.tempC) °C"
-        
-        let imageName = viewModel.current.condition.icon
-        let imageUrlString = "https:\(imageName)"
-        if let imageUrl = URL(string: imageUrlString) {
-            let session = URLSession.shared
-            let task = session.dataTask(with: imageUrl, completionHandler: { data, response, error in
-                if let error = error {
-                    print("Error loading image: \(error)")
-                } else if let data = data, let image = UIImage(data: data) {
-                    DispatchQueue.main.async {
-                        self.weatherImageView.image = image
-                    }
-                }
-            })
-            task.resume()
-        }
-    }
+    // MARK: - Private methods
     
     private func configureConstraints() {
         
         NSLayoutConstraint.activate([
-            
             cityNameLabel.topAnchor.constraint(equalTo: topAnchor, constant: 5),
             cityNameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 5),
             cityNameLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -5),
@@ -160,7 +136,36 @@ extension WeatherCollectionViewCell {
     }
 }
 
-// MARK: - Extension ProfileView
+// MARK: - Configure
+
+extension WeatherCollectionViewCell {
+    
+    func configure(with viewModel: WeatherData) {
+        
+        self.cityNameLabel.text = viewModel.location.name
+        self.descriptionWeatherLabel.text = viewModel.current.condition.text
+        
+        self.temperatureLabel.text = "\(viewModel.current.tempC) °C"
+        
+        let imageName = viewModel.current.condition.icon
+        let imageUrlString = "https:\(imageName)"
+        if let imageUrl = URL(string: imageUrlString) {
+            let session = URLSession.shared
+            let task = session.dataTask(with: imageUrl, completionHandler: { data, response, error in
+                if let error = error {
+                    print("Error loading image: \(error)")
+                } else if let data = data, let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        self.weatherImageView.image = image
+                    }
+                }
+            })
+            task.resume()
+        }
+    }
+}
+
+// MARK: - Extension WeatherCollectionViewCell
 
 extension WeatherCollectionViewCell {
     @objc
